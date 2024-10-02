@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NuttPet - Produtos</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="shortcut icon" href="img/logo.png" type="image/x-icon">
 </head>
+
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white">
@@ -18,55 +21,49 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="index.html">Home</a>
+                    <a class="nav-link" href="index.html"><i class="fas fa-home"></i> Home</a>
                 </li>
                 <li class="nav-item active">
-                    <a class="nav-link" href="produtos.html">Produtos</a>
+                    <a class="nav-link" href="produtos.html"><i class="fas fa-paw"></i> Produtos</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="servicos.html">Serviços</a>
+                    <a class="nav-link" href="servicos.html"><i class="fas fa-stethoscope"></i> Serviços</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="contato.html">Contato</a>
+                    <a class="nav-link" href="contato.html"><i class="fas fa-envelope"></i> Contato</a>
                 </li>
             </ul>
         </div>
     </nav>
 
-    <!-- Produtos -->
-    <section class="py-5">
-        <div class="container">
-            <h2 class="text-center mb-4">Nossos Produtos</h2>
+    <!-- Produtos em Destaque -->
+    <section class="produtos py-5 bg-light">
+        <div class="container text-center">
+            <h2 class="mb-4">Produtos em Destaque</h2>
             <div class="row">
-                <div class="col-md-4">
-                    <div class="card mb-4">
-                        <img src="img/racao.jfif" class="card-img-top" alt="Ração">
-                        <div class="card-body">
-                            <h5 class="card-title">Ração Premium</h5>
-                            <p class="card-text">Alimento de alta qualidade para seu pet.</p>
-                            <a href="#" class="btn btn-primary">Ver Mais</a>
-                        </div>
-                    </div>
+                <div class="col-md-3">
+                    <img src="img/racao.jfif" alt="Ração" class="img-fluid mb-2 hover-img">
+                    <h5>Ração Premium</h5>
+                    <p>Alimentação saudável e balanceada para todas as raças. Produtos de alta qualidade para cães e gatos.</p>
+                    <a href="#" class="btn btn-outline-success">Ver Produto</a>
                 </div>
-                <div class="col-md-4">
-                    <div class="card mb-4">
-                        <img src="img/brinquedo.jfif" class="card-img-top" alt="Brinquedo">
-                        <div class="card-body">
-                            <h5 class="card-title">Brinquedos Interativos</h5>
-                            <p class="card-text">Diversão garantida para o seu pet.</p>
-                            <a href="#" class="btn btn-primary">Ver Mais</a>
-                        </div>
-                    </div>
+                <div class="col-md-3">
+                    <img src="img/brinquedo.jfif" alt="Brinquedo" class="img-fluid mb-2 hover-img">
+                    <h5>Brinquedos Interativos</h5>
+                    <p>Diversão garantida com brinquedos desenvolvidos para a saúde mental e física do seu pet.</p>
+                    <a href="#" class="btn btn-outline-success">Ver Produto</a>
                 </div>
-                <div class="col-md-4">
-                    <div class="card mb-4">
-                        <img src="img/coleira.jfif" class="card-img-top" alt="Coleira">
-                        <div class="card-body">
-                            <h5 class="card-title">Coleiras e Acessórios</h5>
-                            <p class="card-text">Deixe seu pet estiloso e confortável.</p>
-                            <a href="#" class="btn btn-primary">Ver Mais</a>
-                        </div>
-                    </div>
+                <div class="col-md-3">
+                    <img src="img/medicamento.jfif" alt="Medicamento" class="img-fluid mb-2 hover-img">
+                    <h5>Medicamentos</h5>
+                    <p>Medicamentos veterinários para tratamento de doenças e cuidados gerais.</p>
+                    <a href="#" class="btn btn-outline-success">Ver Produto</a>
+                </div>
+                <div class="col-md-3">
+                    <img src="img/coleira.jfif" alt="Coleira" class="img-fluid mb-2 hover-img">
+                    <h5>Coleiras e Acessórios</h5>
+                    <p>Coleiras e acessórios estilosos e confortáveis para o seu pet.</p>
+                    <a href="#" class="btn btn-outline-success">Ver Produto</a>
                 </div>
             </div>
         </div>
@@ -75,7 +72,7 @@
     <!-- Footer -->
     <footer class="py-4 bg-dark text-white text-center">
         <div class="container">
-            <p>NuttPet - Todos os direitos reservados &copy; 2024</p>
+            <p><i class="fas fa-paw"></i> NuttPet - Todos os direitos reservados &copy; 2024</p>
         </div>
     </footer>
 
@@ -84,4 +81,5 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
+
 </html>
