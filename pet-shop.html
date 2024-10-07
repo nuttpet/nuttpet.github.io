@@ -3,15 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NuttPet - Contato</title>
+    <title>NuttPet - Pet Shop</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f9f9f9;
-        }
         .banner {
             padding: 50px 0;
             background-color: #e9581f;
@@ -44,59 +40,23 @@
         }
 
 
-        .contact-section {
-            padding: 60px 0;
+        .service-section {
+            margin-top: 50px;
         }
-        .contact-section h2 {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #e9581f;
-            margin-bottom: 30px;
-        }
-        .contact-section p {
-            color: #555;
-            font-size: 1.1rem;
-        }
-        .contact-card {
+
+        .service-item {
             background-color: white;
-            padding: 30px;
+            padding: 20px;
             border-radius: 15px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
-        .contact-card h5 {
-            color: #e9581f;
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-        .contact-card p {
-            color: #333;
-            font-size: 1rem;
-        }
-        .contact-button {
-    background-color: #25d366;
-    color: white;
-    padding: 15px 40px;
-    font-size: 1.2rem;
-    border-radius: 30px;
-    transition: background-color 0.3s;
-    width: 100%; /* Garante que o botão ocupe toda a largura da coluna em telas pequenas */
-    max-width: 350px; /* Define um limite máximo de largura em telas maiores */
-    margin: 0 auto; /* Centraliza o botão horizontalmente */
-}
 
-/* Ajuste para telas pequenas */
-@media (max-width: 576px) {
-    .contact-button {
-        padding: 12px 20px; /* Reduz o padding em telas pequenas */
-        font-size: 1rem; /* Reduz o tamanho da fonte para melhor visualização */
-        width: 100%; /* Garante que o botão ocupe toda a largura da coluna */
-    }
-}
-
-        .contact-button:hover {
-            background-color: #22bb57;
+        .service-item img {
+            border-radius: 15px;
+            max-width: 100%;
+            height: auto;
         }
+
         footer {
             background-color: #333;
             color: white;
@@ -104,9 +64,11 @@
             border-top-left-radius: 50px;
             border-top-right-radius: 50px;
         }
+
         footer p {
             margin: 0;
         }
+
         .logo-header {
             width: 20vw;
         }
@@ -128,11 +90,11 @@
                 <li class="nav-item">
                     <a class="nav-link" href="spa-animal.html">SPA Animal</a>
                 </li>
-                <li class="nav-item"></li>
-                    <a class="nav-link" href="pet-shop.html">Pet Shop</a>
-                </li>
                 <li class="nav-item">
                     <a class="nav-link" href="atendimento-veterinario.html">Atendimento Veterinário</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="contato.html">Contato</a>
                 </li>
             </ul>
         </div>
@@ -141,28 +103,41 @@
     <!-- Banner -->
     <section class="banner text-center">
         <div class="container">
-            <h1>Entre em Contato</h1>
+            <h1>Pet Shop</h1>
         </div>
     </section>
 
-    <!-- Contato Section -->
-    <section class="contact-section">
+    <!-- Produtos do Pet Shop -->
+    <section class="product-section text-center py-5">
         <div class="container">
-            <p class="text-center">Envie uma mensagem via WhatsApp ou visite-nos na nossa loja física!</p>
+            <h2>Produtos Disponíveis</h2>
             <div class="row">
-                <!-- Endereço e Telefone -->
-                <div class="col-md-6">
-                    <div class="contact-card">
-                        <h5>Endereço</h5>
-                        <p>Av. Pedro Reginaldo da Costa, 560 - Balneario dos Golfinhos, Caraguatatuba - SP, 11666-800</p>
-                        <h5>Telefone</h5>
-                        <p>(12) 99170-8394</p>
+                <div class="col-md-3">
+                    <div class="product-item">
+                        <img src="img/racao-premium.jpg" alt="Ração Premium">
+                        <h5>Ração Premium</h5>
+                        <p>Alimentação de alta qualidade para o seu pet.</p>
                     </div>
                 </div>
-                <!-- Botão WhatsApp -->
-                <div class="col-md-6 text-center">
-                    <div class="contact-card">
-                        <a href="https://api.whatsapp.com/send/?phone=5512991708394&text&type=phone_number&app_absent=0" class="contact-button">Fale Conosco via WhatsApp</a>
+                <div class="col-md-3">
+                    <div class="product-item">
+                        <img src="img/brinquedos-interativos.jpg" alt="Brinquedos Interativos">
+                        <h5>Brinquedos Interativos</h5>
+                        <p>Entretenimento garantido para seu pet.</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="product-item">
+                        <img src="img/camas-confortaveis.jpg" alt="Camas Confortáveis">
+                        <h5>Camas Confortáveis</h5>
+                        <p>Conforto e aconchego para o descanso do seu pet.</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="product-item">
+                        <img src="img/coleiras-e-acessorios.jpg" alt="Coleiras e Acessórios">
+                        <h5>Coleiras e Acessórios</h5>
+                        <p>Estilo e segurança nas caminhadas com seu pet.</p>
                     </div>
                 </div>
             </div>

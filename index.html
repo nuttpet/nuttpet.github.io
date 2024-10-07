@@ -3,102 +3,236 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NuttPet - Seu Petshop de Confiança</title>
+    <title>NuttPet - SPA Animal, Pet Shop, Atendimento Veterinário</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
     <link rel="shortcut icon" href="img/logo.png" type="image/x-icon">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f8f8;
+            color: #333;
+        }
+
+        /* Estilos de bordas arredondadas e cores */
+        .rounded-corner {
+            border-radius: 15px;
+        }
+
+        .bg-main {
+            background-color: #e9581f;
+        }
+
+        .bg-light-main {
+            background-color: #fdf1ec;
+        }
+
+        .text-main {
+            color: #e9581f;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            color: #e9581f;
+        }
+
+        .navbar {
+            border-bottom: 2px solid #e9581f;
+        }
+
+        .navbar-nav .nav-link {
+            color: #333;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #e9581f;
+        }
+
+        .banner {
+            padding: 50px 0;
+            background-color: #e9581f;
+            color: white;
+            border-bottom-left-radius: 50px;
+            border-bottom-right-radius: 50px;
+        }
+
+        .banner h1 {
+            font-size: 2.8rem;
+            font-weight: bold;
+        }
+
+        .banner img {
+            border-radius: 15px;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .btn-whatsapp {
+            margin-top: 30px;
+            background-color: #25D366;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+        }
+
+        .btn-whatsapp:hover {
+            background-color: #128C7E;
+        }
+
+        .services, .products {
+            margin-top: 50px;
+        }
+
+        .services h2, .products h2 {
+            color: #e9581f;
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+        }
+
+        .services .service-item, .products .product-item {
+            background-color: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .service-item:hover, .product-item:hover {
+            transform: scale(1.05);
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 20px;
+            border-top-left-radius: 50px;
+            border-top-right-radius: 50px;
+        }
+
+        footer p {
+            margin: 0;
+        }
+
+        .logo-header {
+            width: 20vw;
+        }
+    </style>
 </head>
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white">
-        <a class="navbar-brand" href="#"><i class="fas fa-paw"></i> NuttPet</a>
+        <img src="img/logopreta.png" alt="NuttPet Banner" class="logo-header">
+        <a class="navbar-brand" href="#">Nutt Pet</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="index.html"><i class="fas fa-home"></i> Home</a>
+                <li class="nav-item">
+                    <a class="nav-link" href="spa-animal.html">SPA Animal</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="produtos.html"><i class="fas fa-box-open"></i> Produtos</a>
+                    <a class="nav-link" href="pet-shop.html">Pet Shop</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="servicos.html"><i class="fas fa-cut"></i> Serviços</a>
+                    <a class="nav-link" href="atendimento-veterinario.html">Atendimento Veterinário</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="contato.html"><i class="fas fa-envelope"></i> Contato</a>
+                    <a class="nav-link" href="contato.html">Contato</a>
                 </li>
             </ul>
         </div>
     </nav>
 
-    <!-- Banner Principal -->
-    <section class="banner text-center text-white">
+    <!-- Banner -->
+    <section class="banner text-center">
         <div class="container">
-            <img src="img/banner.png" alt="Banner NuttPet" class="img-fluid">
-            <p>Seu pet merece o melhor cuidado!</p>
-            <a href="https://api.whatsapp.com/send/?phone=5512991708394&text&type=phone_number&app_absent=0" class="btn btn-primary btn-lg">
-                <i class="fab fa-whatsapp"></i> Agende via WhatsApp
-            </a>
-        </div>
-    </section>
-
-    <!-- Serviços Oferecidos -->
-    <section class="servicos py-5">
-        <div class="container text-center">
-            <h2 class="mb-4"><i class="fas fa-concierge-bell"></i> Nossos Serviços</h2>
             <div class="row">
-                <div class="col-md-4">
-                    <img src="img/banho.jpg" alt="Banho" class="img-fluid mb-2 hover-img">
-                    <h4><i class="fas fa-shower"></i> Banho</h4>
-                    <p>Cuidados especiais para o seu pet.</p>
+                <!-- Slogan e logo -->
+                <div class="col-md-6">
+                    <img src="img/banner.png" alt="NuttPet Banner" class="img-fluid rounded-corner">
                 </div>
-                <div class="col-md-4">
-                    <img src="img/tosa.jpg" alt="Tosa" class="img-fluid mb-2 hover-img">
-                    <h4><i class="fas fa-cut"></i> Tosa</h4>
-                    <p>Deixe seu pet sempre estiloso.</p>
-                </div>
-                <div class="col-md-4">
-                    <img src="img/veterinario.jfif" alt="Veterinário" class="img-fluid mb-2 hover-img">
-                    <h4><i class="fas fa-stethoscope"></i> Clínica Veterinária</h4>
-                    <p>Exames, consultas e fisioterapia.</p>
+                <div class="col-md-6 text-left">
+                    <h1>Nutrindo o bem-estar<br> do seu melhor amigo</h1>
+                    <a href="https://api.whatsapp.com/send/?phone=5512991708394&text&type=phone_number&app_absent=0" class="btn btn-whatsapp">
+                        <i class="fab fa-whatsapp"></i> Agende via WhatsApp
+                    </a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Produtos em Destaque -->
-    <section class="produtos py-5 bg-light">
-        <div class="container text-center">
-            <h2 class="mb-4"><i class="fas fa-star"></i> Produtos em Destaque</h2>
+    <!-- Serviços -->
+    <section class="services text-center py-5">
+        <div class="container">
+            <h2>Nossos Serviços</h2>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="service-item">
+                        <img src="img/banho.jpg" alt="Banho" class="img-fluid rounded-corner mb-3">
+                        <h4>Banho</h4>
+                        <p>Cuidados especiais para o seu pet.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="service-item">
+                        <img src="img/tosa.jpg" alt="Tosa" class="img-fluid rounded-corner mb-3">
+                        <h4>Tosa</h4>
+                        <p>Deixe seu pet sempre estiloso.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="service-item">
+                        <img src="img/veterinario.jfif" alt="Veterinário" class="img-fluid rounded-corner mb-3">
+                        <h4>Clínica Veterinária</h4>
+                        <p>Exames, consultas e fisioterapia.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Produtos -->
+    <section class="products text-center py-5 bg-light-main">
+        <div class="container">
+            <h2>Produtos em Destaque</h2>
             <div class="row">
                 <div class="col-md-3">
-                    <img src="img/racao.jfif" alt="Ração" class="img-fluid mb-2 hover-img">
-                    <h5><i class="fas fa-drumstick-bite"></i> Ração Premium</h5>
+                    <div class="product-item">
+                        <img src="img/racao.jfif" alt="Ração Premium" class="img-fluid rounded-corner mb-2">
+                        <h5>Ração Premium</h5>
+                    </div>
                 </div>
                 <div class="col-md-3">
-                    <img src="img/brinquedo.jfif" alt="Brinquedo" class="img-fluid mb-2 hover-img">
-                    <h5><i class="fas fa-puzzle-piece"></i> Brinquedos Interativos</h5>
+                    <div class="product-item">
+                        <img src="img/brinquedo.jfif" alt="Brinquedo" class="img-fluid rounded-corner mb-2">
+                        <h5>Brinquedos Interativos</h5>
+                    </div>
                 </div>
                 <div class="col-md-3">
-                    <img src="img/medicamento.jfif" alt="Medicamento" class="img-fluid mb-2 hover-img">
-                    <h5><i class="fas fa-capsules"></i> Medicamentos</h5>
+                    <div class="product-item">
+                        <img src="img/medicamento.jfif" alt="Medicamento" class="img-fluid rounded-corner mb-2">
+                        <h5>Medicamentos</h5>
+                    </div>
                 </div>
                 <div class="col-md-3">
-                    <img src="img/coleira.jfif" alt="Coleira" class="img-fluid mb-2 hover-img">
-                    <h5><i class="fas fa-dog"></i> Coleiras e Acessórios</h5>
+                    <div class="product-item">
+                        <img src="img/coleira.jfif" alt="Coleiras" class="img-fluid rounded-corner mb-2">
+                        <h5>Coleiras e Acessórios</h5>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="py-4 bg-dark text-white text-center">
-        <div class="container">
-            <p><i class="fas fa-paw"></i> NuttPet - Todos os direitos reservados &copy; 2024</p>
-        </div>
+    <footer class="text-center">
+        <p>NuttPet - Todos os direitos reservados &copy; 2024</p>
     </footer>
 
     <!-- Scripts -->
