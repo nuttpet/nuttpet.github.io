@@ -1,243 +1,529 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NuttPet - SPA Animal, Pet Shop, Atendimento Veterinário</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="shortcut icon" href="img/logo.png" type="image/x-icon">
+    <title>Nutt Pet - Petshop, Spa & Bem-estar</title>
+    
+    <!-- Favicon da Aba do Navegador -->
+    <link rel="icon" type="image/png" href="img/Logotipo - Nutt pet_Prancheta 1 cópia 27.png">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons (Alternative to Lucide for Vanilla HTML) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        nutt: {
+                            orange: '#e9581f',
+                            peach: '#f7bda7',
+                            teal: '#469587',
+                            lightTeal: '#63beb2',
+                            brown: '#513b36',
+                            rust: '#aa6143'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Nunito', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f8f8f8;
-            color: #333;
+            font-family: 'Nunito', sans-serif;
+            background-color: #ffffff;
+            color: #513b36;
+            overflow-x: hidden;
+        }
+        
+        .text-balance {
+            text-wrap: balance;
         }
 
-        /* Estilos de bordas arredondadas e cores */
-        .rounded-corner {
-            border-radius: 15px;
+        /* Custom geometric shapes */
+        .blob-shape {
+            border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
         }
 
-        .bg-main {
-            background-color: #e9581f;
+        /* Animation Base Classes */
+        .fade-element {
+            transition: all 1s ease-out;
+            opacity: 0;
+            pointer-events: none; /* Prevent interaction while hidden */
         }
 
-        .bg-light-main {
-            background-color: #fdf1ec;
-        }
+        /* Animation Directions */
+        .fade-up { transform: translateY(3rem); }
+        .fade-down { transform: translateY(-3rem); }
+        .fade-left { transform: translateX(-3rem); }
+        .fade-right { transform: translateX(3rem); }
+        .fade-scale { transform: scale(0.9); }
 
-        .text-main {
-            color: #e9581f;
-        }
-
-        .navbar-brand {
-            font-weight: bold;
-            color: #e9581f;
-        }
-
-        .navbar {
-            border-bottom: 2px solid #e9581f;
-        }
-
-        .navbar-nav .nav-link {
-            color: #333;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        .navbar-nav .nav-link:hover {
-            color: #e9581f;
-        }
-
-        .banner {
-            padding: 50px 0;
-            background-color: #e9581f;
-            color: white;
-            border-bottom-left-radius: 50px;
-            border-bottom-right-radius: 50px;
-        }
-
-        .banner h1 {
-            font-size: 2.8rem;
-            font-weight: bold;
-        }
-
-        .banner img {
-            border-radius: 15px;
-            max-width: 100%;
-            height: auto;
-        }
-
-        .btn-whatsapp {
-            margin-top: 30px;
-            background-color: #25D366;
-            color: white;
-            padding: 15px 30px;
-            border-radius: 25px;
-            font-size: 1.2rem;
-            text-transform: uppercase;
-        }
-
-        .btn-whatsapp:hover {
-            background-color: #128C7E;
-        }
-
-        .services, .products {
-            margin-top: 50px;
-        }
-
-        .services h2, .products h2 {
-            color: #e9581f;
-            font-size: 2.2rem;
-            margin-bottom: 30px;
-        }
-
-        .services .service-item, .products .product-item {
-            background-color: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-        }
-
-        .service-item:hover, .product-item:hover {
-            transform: scale(1.05);
-        }
-
-        footer {
-            background-color: #333;
-            color: white;
-            padding: 20px;
-            border-top-left-radius: 50px;
-            border-top-right-radius: 50px;
-        }
-
-        footer p {
-            margin: 0;
-        }
-
-        .logo-header {
-            width: 20vw;
+        /* Visible State */
+        .fade-element.visible {
+            opacity: 1;
+            transform: translate(0) scale(1);
+            pointer-events: auto;
         }
     </style>
 </head>
-<body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white">
-        <img src="img/logopreta.png" alt="NuttPet Banner" class="logo-header">
-        <a class="navbar-brand" href="#">Nutt Pet</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="spa-animal.html">SPA Animal</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="pet-shop.html">Pet Shop</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="atendimento-veterinario.html">Atendimento Veterinário</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="contato.html">Contato</a>
-                </li>
-            </ul>
+<body class="selection:bg-nutt-orange selection:text-white">
+
+    <nav id="navbar" class="fixed w-full z-50 transition-all duration-300 bg-transparent py-5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center">
+                
+                <!-- Logo -->
+                <div class="flex items-center cursor-pointer" onclick="window.scrollTo(0,0)">
+                    <img src="img/Logotipo - Nutt pet_Prancheta 1.png" alt="Nutt Pet Logo" class="h-20 md:h-24 w-auto object-contain drop-shadow-sm" style="height: 150px;">
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#o-espaco" class="font-bold text-nutt-brown hover:text-nutt-orange transition-colors">O Espaço</a>
+                    <a href="#servicos" class="font-bold text-nutt-brown hover:text-nutt-orange transition-colors">Serviços</a>
+                    <a href="#valores" class="font-bold text-nutt-brown hover:text-nutt-orange transition-colors">Valores</a>
+                    <a href="#contato" class="font-bold text-nutt-brown hover:text-nutt-orange transition-colors">Contato</a>
+                    
+                    <a href="https://api.whatsapp.com/send/?phone=5512991708394&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer" class="px-6 py-2.5 rounded-full font-bold text-white shadow-lg hover:scale-105 transition-all inline-block bg-nutt-orange">
+                        Agendar Horário
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-nutt-brown">
+                        <i id="menu-icon" class="ph ph-list text-3xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu (Hidden by default) -->
+        <div id="mobile-menu" class="hidden absolute top-full left-0 w-full bg-white shadow-xl py-4 flex flex-col items-center space-y-4 md:hidden border-t border-gray-100">
+            <a href="#o-espaco" class="mobile-link font-bold text-lg text-nutt-brown">O Espaço</a>
+            <a href="#servicos" class="mobile-link font-bold text-lg text-nutt-brown">Serviços</a>
+            <a href="#valores" class="mobile-link font-bold text-lg text-nutt-brown">Valores</a>
+            <a href="#contato" class="mobile-link font-bold text-lg text-nutt-brown">Contato</a>
+            <a href="https://api.whatsapp.com/send/?phone=5512991708394&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer" class="px-8 py-3 rounded-full font-bold text-white w-11/12 mt-4 text-center block bg-nutt-orange">
+                Agendar Horário
+            </a>
         </div>
     </nav>
 
-    <!-- Banner -->
-    <section class="banner text-center">
-        <div class="container">
-            <div class="row">
-                <!-- Slogan e logo -->
-                <div class="col-md-6">
-                    <img src="img/banner.png" alt="NuttPet Banner" class="img-fluid rounded-corner">
+    <main>
+        <section id="o-espaco" class="relative pt-32 pb-20 lg:pt-40 lg:pb-24 overflow-hidden bg-nutt-peach">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="grid lg:grid-cols-2 gap-12 items-center">
+                    
+                    <!-- Text Content -->
+                    <div class="text-center lg:text-left fade-element fade-right">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 mb-6 font-bold text-nutt-rust">
+                            <i class="ph-fill ph-sparkle text-xl"></i>
+                            <span>Cuidado Animal</span>
+                        </div>
+                        <h1 class="text-5xl lg:text-6xl font-black tracking-tight leading-tight mb-4 text-balance text-nutt-brown">
+                            clínica, spa & boutique <span class="text-nutt-orange">pet</span>.
+                        </h1>
+                        <p class="text-xl mb-8 opacity-90 max-w-lg mx-auto lg:mx-0 font-bold text-nutt-brown">
+                            <strong class="font-black text-nutt-orange">Seu pet merece mais do que o básico.</strong> Um ecossistema completo para a saúde e estética do seu melhor amigo.
+                        </p>
+
+                        <!-- Badges Visuais Diretos -->
+                        <div class="flex flex-wrap gap-2 justify-center lg:justify-start mb-8 fade-element fade-up" data-delay="100">
+                            <span class="px-4 py-2 rounded-xl bg-white/80 text-nutt-teal font-black text-sm shadow-sm flex items-center gap-2"><i class="ph-fill ph-stethoscope text-xl"></i> Consultas</span>
+                            <span class="px-4 py-2 rounded-xl bg-white/80 text-nutt-teal font-black text-sm shadow-sm flex items-center gap-2"><i class="ph-fill ph-bone text-xl"></i> Fisio</span>
+                            <span class="px-4 py-2 rounded-xl bg-white/80 text-nutt-orange font-black text-sm shadow-sm flex items-center gap-2"><i class="ph-fill ph-drop text-xl"></i> Banho Terapêutico</span>
+                            <span class="px-4 py-2 rounded-xl bg-white/80 text-nutt-orange font-black text-sm shadow-sm flex items-center gap-2"><i class="ph-fill ph-pill text-xl"></i> Farmácia</span>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start fade-element fade-up" data-delay="200">
+                            <a href="https://api.whatsapp.com/send/?phone=5512991708394&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer" class="px-8 py-4 rounded-full font-black text-white text-lg shadow-xl hover:scale-105 transition-transform flex items-center justify-center gap-2 bg-[#25D366]">
+                                <i class="ph-fill ph-whatsapp-logo text-2xl"></i>
+                                Agendar no WhatsApp
+                            </a>
+                            <a href="#servicos" class="px-8 py-4 rounded-full font-bold text-nutt-brown text-lg border-2 border-nutt-brown hover:bg-nutt-brown hover:text-white transition-colors flex items-center justify-center gap-2">
+                                Ver Detalhes
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Image Content -->
+                    <div class="relative mt-10 lg:mt-0 fade-element fade-left" data-delay="300">
+                        <!-- Decorative background shape -->
+                        <div class="absolute inset-0 blob-shape rotate-12 scale-105 opacity-20 transition-transform duration-1000 hover:rotate-45 bg-nutt-orange"></div>
+                        
+                        <div class="relative rounded-[3rem] overflow-hidden shadow-2xl aspect-[4/5] lg:aspect-square border-8 border-white group">
+                            <img 
+                                src="img/pexels-monstera-20215039.jpg" 
+                                alt="Cachorro feliz" 
+                                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            />
+                            <!-- Overlay gradient -->
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                            
+                            <div class="absolute bottom-6 left-6 right-6 fade-element fade-up" data-delay="600">
+                               <div class="bg-white/90 backdrop-blur-sm p-4 rounded-2xl flex items-center gap-4 shadow-lg hover:bg-white transition-colors cursor-default">
+                                  <div class="p-3 rounded-full bg-nutt-lightTeal">
+                                    <i class="ph-fill ph-heart text-2xl text-white"></i>
+                                  </div>
+                                  <div>
+                                    <p class="font-bold text-sm text-nutt-brown">Cuidado Premium</p>
+                                    <p class="text-xs font-semibold opacity-80 text-nutt-brown">Profissionais apaixonados</p>
+                                  </div>
+                               </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Decorative Squiggle -->
+                        <svg viewBox="0 0 200 100" class="absolute -top-10 -right-10 w-40 opacity-50 rotate-45 hidden lg:block animate-pulse" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10 50 Q 50 10, 100 50 T 190 50" stroke="#469587" stroke-width="12" stroke-linecap="round" />
+                        </svg>
+                    </div>
                 </div>
-                <div class="col-md-6 text-left">
-                    <h1>Nutrindo o bem-estar<br> do seu melhor amigo</h1>
-                    <a href="https://api.whatsapp.com/send/?phone=5512991708394&text&type=phone_number&app_absent=0" class="btn btn-whatsapp">
-                        <i class="fab fa-whatsapp"></i> Agende via WhatsApp
+            </div>
+        </section>
+
+        <section id="servicos" class="py-24 bg-white relative overflow-hidden">
+            <svg viewBox="0 0 200 100" class="absolute top-10 left-10 w-64 opacity-10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 50 Q 50 10, 100 50 T 190 50" stroke="#e9581f" stroke-width="12" stroke-linecap="round" />
+            </svg>
+            
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6 fade-element fade-up">
+                    <div class="max-w-2xl">
+                        <h2 class="text-4xl lg:text-5xl font-black mb-4 text-nutt-orange">O que fazemos</h2>
+                        <p class="text-xl font-bold text-nutt-brown">Tudo o que seu pet precisa em um único lugar, com a qualidade e seriedade que você confia.</p>
+                    </div>
+                </div>
+
+                <div class="grid lg:grid-cols-3 gap-8">
+                    
+                    <!-- Service 1 -->
+                    <div class="h-full fade-element fade-up" data-delay="0">
+                        <div class="rounded-[2.5rem] overflow-hidden group hover:shadow-2xl transition-all duration-300 flex flex-col h-full bg-nutt-teal text-white">
+                            <div class="h-64 overflow-hidden relative">
+                                <img src="img/istockphoto-1312330365-612x612.jpg" alt="Spa & Estética" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                <div class="absolute top-4 right-4 bg-white/90 backdrop-blur p-3 rounded-full shadow-lg group-hover:rotate-12 transition-transform duration-300">
+                                    <i class="ph-fill ph-scissors text-2xl text-nutt-teal"></i>
+                                </div>
+                            </div>
+                            <div class="p-8 flex-1 flex flex-col">
+                                <h3 class="text-3xl font-black mb-4">Spa & Estética</h3>
+                                <p class="font-semibold opacity-90 leading-relaxed mb-8 flex-1">Momentos de puro relaxamento. <strong class="text-nutt-peach">Banhos terapêuticos</strong>, tosas na tesoura e cuidados estéticos com produtos premium para o máximo conforto.</p>
+                                <a href="https://api.whatsapp.com/send/?phone=5512991708394&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 font-bold w-fit group/btn text-white">
+                                    Agendar agora
+                                    <span class="bg-black/10 p-2 rounded-full group-hover/btn:bg-black/20 group-hover/btn:translate-x-1 transition-all">
+                                        <i class="ph-bold ph-caret-right"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Service 2 -->
+                    <div class="h-full fade-element fade-up" data-delay="150">
+                        <div class="rounded-[2.5rem] overflow-hidden group hover:shadow-2xl transition-all duration-300 flex flex-col h-full bg-nutt-peach text-nutt-brown">
+                            <div class="h-64 overflow-hidden relative">
+                                <img src="img/pexels-alberlan-16620556.jpg" alt="Boutique Pet Shop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                <div class="absolute top-4 right-4 bg-white/90 backdrop-blur p-3 rounded-full shadow-lg group-hover:rotate-12 transition-transform duration-300">
+                                    <i class="ph-fill ph-pill text-2xl text-nutt-orange"></i>
+                                </div>
+                            </div>
+                            <div class="p-8 flex-1 flex flex-col">
+                                <h3 class="text-3xl font-black mb-4">Farmácia & Boutique</h3>
+                                <p class="font-semibold opacity-90 leading-relaxed mb-8 flex-1"><strong>Farmácia veterinária completa</strong>, curadoria exclusiva de acessórios, brinquedos e nutrição de alta qualidade para o estilo de vida do seu pet.</p>
+                                <a href="https://api.whatsapp.com/send/?phone=5512991708394&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 font-bold w-fit group/btn text-nutt-brown">
+                                    Visite a loja
+                                    <span class="bg-black/10 p-2 rounded-full group-hover/btn:bg-black/20 group-hover/btn:translate-x-1 transition-all">
+                                        <i class="ph-bold ph-caret-right"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Service 3 -->
+                    <div class="h-full fade-element fade-up" data-delay="300">
+                        <div class="rounded-[2.5rem] overflow-hidden group hover:shadow-2xl transition-all duration-300 flex flex-col h-full bg-nutt-brown text-white">
+                            <div class="h-64 overflow-hidden relative">
+                                <img src="img/pexels-gustavo-fring-6816847.jpg" alt="Clínica Veterinária" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                <div class="absolute top-4 right-4 bg-white/90 backdrop-blur p-3 rounded-full shadow-lg group-hover:rotate-12 transition-transform duration-300">
+                                    <i class="ph-fill ph-stethoscope text-2xl text-nutt-brown"></i>
+                                </div>
+                            </div>
+                            <div class="p-8 flex-1 flex flex-col">
+                                <h3 class="text-3xl font-black mb-4">Clínica Veterinária</h3>
+                                <p class="font-semibold opacity-90 leading-relaxed mb-8 flex-1">Saúde em primeiro lugar. <strong>Consultas especializadas e sessões de fisioterapia</strong> com infraestrutura moderna para um atendimento humanizado.</p>
+                                <a href="https://api.whatsapp.com/send/?phone=5512991708394&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 font-bold w-fit group/btn text-white">
+                                    Falar com Vet
+                                    <span class="bg-black/10 p-2 rounded-full group-hover/btn:bg-black/20 group-hover/btn:translate-x-1 transition-all">
+                                        <i class="ph-bold ph-caret-right"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <section id="valores" class="py-24 overflow-hidden bg-nutt-lightTeal">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16 fade-element fade-up">
+                    <h2 class="text-4xl lg:text-5xl font-black mb-4 text-nutt-brown">O Padrão Nutt Pet</h2>
+                    <p class="text-xl font-semibold opacity-90 max-w-2xl mx-auto text-nutt-brown">
+                        Nossa essência é construída sobre pilares sólidos. Traduzimos a energia da nossa marca em ações concretas para o seu melhor amigo.
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6 lg:gap-10">
+                    
+                    <!-- Pilar 1: Humana / Alegre -->
+                    <div class="bg-white p-8 md:p-10 rounded-[2.5rem] shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 h-full fade-element fade-scale" data-delay="0">
+                        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 bg-nutt-peach">
+                            <i class="ph-fill ph-heart text-3xl text-nutt-orange"></i>
+                        </div>
+                        <h3 class="text-2xl font-extrabold text-nutt-brown mb-3">Cuidado Humanizado</h3>
+                        <p class="font-semibold text-nutt-brown opacity-80 leading-relaxed text-lg">
+                            Eles são parte da sua família e aqui são tratados como tal. Nosso time atua com empatia e carinho genuíno para que cada visita seja uma experiência positiva, alegre e livre de estresse.
+                        </p>
+                    </div>
+
+                    <!-- Pilar 2: Moderna / Confiável -->
+                    <div class="bg-white p-8 md:p-10 rounded-[2.5rem] shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 h-full fade-element fade-scale" data-delay="100">
+                        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 bg-nutt-teal/20">
+                            <i class="ph-fill ph-shield-check text-3xl text-nutt-teal"></i>
+                        </div>
+                        <h3 class="text-2xl font-extrabold text-nutt-brown mb-3">Estrutura de Excelência</h3>
+                        <p class="font-semibold text-nutt-brown opacity-80 leading-relaxed text-lg">
+                            Unimos medicina veterinária atualizada, equipamentos modernos e transparência total. Você sempre saberá exatamente o que está acontecendo e quais são as melhores decisões para a saúde do pet.
+                        </p>
+                    </div>
+
+                    <!-- Pilar 3: Moderna / Bem-estar -->
+                    <div class="bg-white p-8 md:p-10 rounded-[2.5rem] shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 h-full fade-element fade-scale" data-delay="200">
+                        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 bg-nutt-orange/20">
+                            <i class="ph-fill ph-sparkle text-3xl text-nutt-orange"></i>
+                        </div>
+                        <h3 class="text-2xl font-extrabold text-nutt-brown mb-3">Curadoria Premium</h3>
+                        <p class="font-semibold text-nutt-brown opacity-80 leading-relaxed text-lg">
+                            Não aceitamos o básico. Da linha de cosméticos do spa aos medicamentos e nutrição da nossa boutique, selecionamos rigorosamente apenas o que há de mais moderno no mercado global.
+                        </p>
+                    </div>
+
+                    <!-- Pilar 4: Divertida / Bem-estar -->
+                    <div class="bg-white p-8 md:p-10 rounded-[2.5rem] shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 h-full fade-element fade-scale" data-delay="300">
+                        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 bg-nutt-brown/10">
+                            <i class="ph-fill ph-smiley text-3xl text-nutt-brown"></i>
+                        </div>
+                        <h3 class="text-2xl font-extrabold text-nutt-brown mb-3">Foco no Bem-estar Real</h3>
+                        <p class="font-semibold text-nutt-brown opacity-80 leading-relaxed text-lg">
+                            Mais do que estética visual, priorizamos a saúde integral. Cada banho terapêutico, sessão de fisio e consulta é planejado para promover longevidade e verdadeira qualidade de vida.
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <section class="py-24 relative overflow-hidden bg-nutt-orange">
+            <div class="absolute inset-0 opacity-10">
+                <div class="w-full h-full" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 40px 40px;"></div>
+            </div>
+            
+            <div class="max-w-5xl mx-auto px-4 text-center relative z-10 fade-element fade-scale">
+                <!-- Ícone do Focinho Branco -->
+                <img src="img/Logotipo - Nutt pet_Prancheta 1 cópia 27.png" alt="Focinho Nutt Pet" class="mx-auto mb-8 opacity-80 object-contain brightness-0 invert" style="height: 200px; width: 200px;" />
+                
+                <h2 class="text-4xl md:text-6xl font-black text-white leading-tight text-balance">
+                    nutrindo o <span class="text-nutt-brown">estilo de vida</span> do seu pet com conforto e sofisticação.
+                </h2>
+                
+                <div class="mt-12 flex justify-center">
+                    <a href="https://api.whatsapp.com/send/?phone=5512991708394&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer" class="px-10 py-5 rounded-full font-black text-xl shadow-2xl hover:scale-105 transition-transform bg-white text-nutt-orange inline-block">
+                        Faça parte da família Nutt Pet
                     </a>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+    </main>
 
-    <!-- Serviços -->
-    <section class="services text-center py-5">
-        <div class="container">
-            <h2>Nossos Serviços</h2>
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="service-item">
-                        <img src="img/banho.jpg" alt="Banho" class="img-fluid rounded-corner mb-3">
-                        <h4>Banho</h4>
-                        <p>Cuidados especiais para o seu pet.</p>
+    <footer id="contato" class="pt-20 pb-10 overflow-hidden bg-nutt-brown text-nutt-peach">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+                
+                <div class="lg:col-span-2 fade-element fade-right">
+                    <div class="flex items-center gap-2 mb-6">
+                        <!-- Logo completa Branca para o rodapé -->
+                        <img src="img/Logotipo - Nutt pet_Prancheta 1.png" alt="Nutt Pet" class="h-12 md:h-14 w-auto object-contain brightness-0 invert" />
+                    </div>
+                    <p class="text-lg font-semibold max-w-md opacity-90 mb-8">
+                        O destino premium para o bem-estar animal. Oferecemos o que há de melhor em estética, nutrição e saúde para o seu companheiro.
+                    </p>
+                    <div class="flex gap-4">
+                        <a href="https://www.instagram.com/nuttpet/" target="_blank" rel="noopener noreferrer" class="p-3 bg-white/10 rounded-full hover:bg-nutt-orange hover:-translate-y-1 hover:text-white transition-all text-white flex items-center justify-center">
+                            <i class="ph-fill ph-instagram-logo text-2xl"></i>
+                        </a>
+                        <a href="https://api.whatsapp.com/send/?phone=5512991708394&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer" class="p-3 bg-white/10 rounded-full hover:bg-nutt-orange hover:-translate-y-1 hover:text-white transition-all text-white flex items-center justify-center">
+                            <i class="ph-fill ph-whatsapp-logo text-2xl"></i>
+                        </a>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="service-item">
-                        <img src="img/tosa.jpg" alt="Tosa" class="img-fluid rounded-corner mb-3">
-                        <h4>Tosa</h4>
-                        <p>Deixe seu pet sempre estiloso.</p>
-                    </div>
+
+                <div class="fade-element fade-up" data-delay="200">
+                    <h4 class="text-white text-xl font-bold mb-6">Navegação</h4>
+                    <ul class="space-y-4 font-semibold opacity-90">
+                        <li><a href="#" class="hover:text-nutt-orange transition-colors">Início</a></li>
+                        <li><a href="#servicos" class="hover:text-nutt-orange transition-colors">Nossos Serviços</a></li>
+                        <li><a href="#valores" class="hover:text-nutt-orange transition-colors">A Marca</a></li>
+                        <li><a href="#contato" class="hover:text-nutt-orange transition-colors">Contato</a></li>
+                    </ul>
                 </div>
-                <div class="col-md-4">
-                    <div class="service-item">
-                        <img src="img/veterinario.jfif" alt="Veterinário" class="img-fluid rounded-corner mb-3">
-                        <h4>Clínica Veterinária</h4>
-                        <p>Exames, consultas e fisioterapia.</p>
-                    </div>
+
+                <div class="fade-element fade-left" data-delay="400">
+                    <h4 class="text-white text-xl font-bold mb-6">Nossas Unidades</h4>
+                    <ul class="space-y-6 font-semibold opacity-90">
+                        <li class="flex gap-3 items-start">
+                            <i class="ph-fill ph-map-pin text-2xl shrink-0 mt-1 text-nutt-orange"></i>
+                            <div>
+                                <span class="text-white font-bold block text-lg mb-1">📍 Unidade Golfinhos</span>
+                                <span class="block opacity-80">Av. Pedro Reginaldo da Costa, 560 - Balneario dos Golfinhos<br/>Caraguatatuba - SP, 11666-800</span>
+                            </div>
+                        </li>
+                        <li class="flex gap-3 items-start">
+                            <i class="ph-fill ph-storefront text-2xl shrink-0 mt-1 text-nutt-orange"></i>
+                            <div>
+                                <span class="text-white font-bold block text-lg mb-1">📍 Unidade Serramar Shopping</span>
+                                <span class="block opacity-80">Serramar Shopping<br/>Caraguatatuba - SP</span>
+                            </div>
+                        </li>
+                        <li class="flex gap-3 items-center pt-2">
+                            <i class="ph-fill ph-phone text-2xl shrink-0 text-nutt-orange"></i>
+                            <a href="https://api.whatsapp.com/send/?phone=5512991708394&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer" class="hover:text-nutt-orange transition-colors text-lg">
+                                (12) 99170-8394
+                            </a>
+                        </li>
+                        <li class="flex gap-3 items-center">
+                            <i class="ph-fill ph-envelope text-2xl shrink-0 text-nutt-orange"></i>
+                            <a href="mailto:nuttpetstore@gmail.com" class="hover:text-nutt-orange transition-colors text-lg">
+                                nuttpetstore@gmail.com
+                            </a>
+                        </li>
+                    </ul>
                 </div>
+
+            </div>
+
+            <div class="pt-8 border-t border-white/10 text-center font-semibold opacity-70 fade-element fade-up" data-delay="600">
+                <p>&copy; <span id="current-year"></span> Nutt Pet. Todos os direitos reservados.</p>
             </div>
         </div>
-    </section>
-
-    <!-- Produtos -->
-    <section class="products text-center py-5 bg-light-main">
-        <div class="container">
-            <h2>Produtos em Destaque</h2>
-            <div class="row">
-                <div class="col-md-3">
-                    <div class="product-item">
-                        <img src="img/racao.jfif" alt="Ração Premium" class="img-fluid rounded-corner mb-2">
-                        <h5>Ração Premium</h5>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="product-item">
-                        <img src="img/brinquedo.jfif" alt="Brinquedo" class="img-fluid rounded-corner mb-2">
-                        <h5>Brinquedos Interativos</h5>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="product-item">
-                        <img src="img/medicamento.jfif" alt="Medicamento" class="img-fluid rounded-corner mb-2">
-                        <h5>Medicamentos</h5>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="product-item">
-                        <img src="img/coleira.jfif" alt="Coleiras" class="img-fluid rounded-corner mb-2">
-                        <h5>Coleiras e Acessórios</h5>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="text-center">
-        <p>NuttPet - Todos os direitos reservados &copy; 2024</p>
     </footer>
 
-    <!-- Scripts -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set current year in footer
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+
+            // --- Navbar Scroll Effect ---
+            const navbar = document.getElementById('navbar');
+            window.addEventListener('scroll', () => {
+                if(window.scrollY > 20) {
+                    navbar.classList.add('bg-white/95', 'backdrop-blur-md', 'shadow-sm', 'py-3');
+                    navbar.classList.remove('bg-transparent', 'py-5');
+                } else {
+                    navbar.classList.remove('bg-white/95', 'backdrop-blur-md', 'shadow-sm', 'py-3');
+                    navbar.classList.add('bg-transparent', 'py-5');
+                }
+            });
+
+            // --- Mobile Menu Toggle ---
+            const menuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const menuIcon = document.getElementById('menu-icon');
+            const mobileLinks = document.querySelectorAll('.mobile-link');
+            
+            let isMenuOpen = false;
+
+            function toggleMenu() {
+                isMenuOpen = !isMenuOpen;
+                if(isMenuOpen) {
+                    mobileMenu.classList.remove('hidden');
+                    menuIcon.classList.remove('ph-list');
+                    menuIcon.classList.add('ph-x');
+                } else {
+                    mobileMenu.classList.add('hidden');
+                    menuIcon.classList.remove('ph-x');
+                    menuIcon.classList.add('ph-list');
+                }
+            }
+
+            menuBtn.addEventListener('click', toggleMenu);
+            mobileLinks.forEach(link => link.addEventListener('click', () => {
+                if(isMenuOpen) toggleMenu();
+            }));
+
+            // --- Intersection Observer for Scroll Animations ---
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px 0px -50px 0px', // Triggers slightly before element enters viewport
+                threshold: 0.15 // Triggers when 15% of the element is visible
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    // Update visibility state for IN and OUT transitions
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    } else {
+                        // Remove class when out of view to re-animate when scrolling back
+                        entry.target.classList.remove('visible');
+                    }
+                });
+            }, observerOptions);
+
+            const fadeElements = document.querySelectorAll('.fade-element');
+            fadeElements.forEach(el => {
+                // Apply dynamic delays if provided in HTML data attribute
+                const delay = el.getAttribute('data-delay');
+                if (delay) {
+                    el.style.transitionDelay = `${delay}ms`;
+                }
+                observer.observe(el);
+            });
+        });
+    </script>
+
+    <!-- Botão Flutuante WhatsApp -->
+    <a href="https://api.whatsapp.com/send/?phone=5512991708394&text&type=phone_number&app_absent=0" 
+       target="_blank" 
+       rel="noopener noreferrer" 
+       class="fixed bottom-6 right-6 z-[100] bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:scale-110 hover:-translate-y-2 transition-all duration-300 flex items-center justify-center group"
+       title="Fale conosco no WhatsApp">
+        <!-- Ícone que pulsa atrás para chamar atenção (opcional, dá um charme) -->
+        <span class="absolute inset-0 rounded-full bg-[#25D366] opacity-40 animate-ping"></span>
+        <!-- Ícone Principal -->
+        <i class="ph-fill ph-whatsapp-logo text-4xl relative z-10"></i>
+    </a>
+
 </body>
 </html>
