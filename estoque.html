@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nutt Pet — Estoque E-commerce</title>
+
+    <!-- PWA / Instalação pelo Chrome -->
+    <link rel="manifest" href="manifest-estoque.json">
+    <meta name="theme-color" content="#e9581f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Nutt Estoque">
+    <link rel="icon" type="image/png" href="img/Logotipo - Nutt pet_Prancheta 1 cópia 27.png">
+    <link rel="apple-touch-icon" href="img/Logotipo - Nutt pet_Prancheta 1 cópia 27.png">
+
+    <!-- Fontes e Ícones (mesmos do index.html) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        nutt: {
+                            orange: '#e9581f',
+                            peach: '#f7bda7',
+                            teal: '#469587',
+                            lightTeal: '#63beb2',
+                            brown: '#513b36',
+                            rust: '#aa6143'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Nunito', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #fffaf7;
+            color: #513b36;
+            -webkit-tap-highlight-color: transparent;
+            padding-bottom: 92px;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="selection:bg-nutt-orange selection:text-white">
+
+    <!-- ==================== TELA DE PIN (OPCIONAL) ==================== -->
+    <div id="pin-screen" class="fixed inset-0 z-[200] bg-nutt-peach flex items-center justify-center p-6 hidden">
+        <div class="bg-white w-full max-w-sm rounded-[2rem] p-8 shadow-2xl text-center">
+            <img src="img/Logotipo - Nutt pet_Prancheta 1.png" alt="Nutt Pet" class="h-20 mx-auto mb-4 object-contain">
+            <h1 class="text-2xl font-black text-nutt-brown mb-1">Estoque E-commerce</h1>
+            <p class="text-sm font-semibold text-nutt-rust mb-6">Digite o PIN da equipe para acessar</p>
+            <input id="pin-input" type="password" inputmode="numeric" maxlength="6" placeholder="••••"
+                class="w-full text-center text-2xl tracking-[0.5em] font-black py-3 px-4 rounded-2xl border-2 border-nutt-peach focus:border-nutt-orange outline-none mb-4">
+            <p id="pin-error" class="text-xs font-bold text-red-600 mb-3 hidden">PIN incorreto. Tente novamente.</p>
+            <button id="pin-submit" class="w-full py-3.5 rounded-full bg-nutt-orange text-white font-black text-lg shadow-lg active:scale-95 transition">
+                Entrar
+            </button>
+        </div>
+    </div>
+
+    <!-- ==================== HEADER FIXO ==================== -->
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-nutt-peach/40 shadow-sm">
+        <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
+            <div class="flex items-center gap-3 min-w-0">
+                <img src="img/Logotipo - Nutt pet_Prancheta 1 cópia 27.png" alt="Nutt Pet" class="h-10 w-10 object-contain shrink-0">
+                <div class="min-w-0">
+                    <h1 class="text-lg font-black text-nutt-brown leading-tight truncate">Estoque Nutt Pet</h1>
+                    <div class="flex items-center gap-1.5 text-xs font-bold">
+                        <span id="sync-dot" class="w-2 h-2 rounded-full bg-amber-400"></span>
+                        <span id="sync-label" class="text-nutt-rust truncate">Conectando...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botão da Operadora Ativa -->
+            <button onclick="window.app.openOperatorModal()" class="flex items-center gap-2 px-3 py-2 rounded-full bg-nutt-peach/40 hover:bg-nutt-peach/70 text-nutt-brown font-extrabold text-xs transition shrink-0">
+                <i class="ph-fill ph-user-circle text-lg text-nutt-orange"></i>
+                <span id="current-operator-label" class="max-w-[100px] truncate">Selecionar</span>
+                <i class="ph-bold ph-caret-down text-xs opacity-70"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- ==================== CONTEÚDO PRINCIPAL ==================== -->
+    <main class="max-w-3xl mx-auto px-4 pt-4">
+
+        <!-- Banner de Instalação PWA (aparece no Chrome quando instalável) -->
+        <div id="install-banner" class="hidden mb-4 p-3.5 rounded-2xl bg-nutt-teal text-white flex items-center justify-between gap-3 shadow-md">
+            <div class="flex items-center gap-3">
+                <i class="ph-fill ph-device-mobile text-2xl shrink-0"></i>
+                <div class="text-xs font-bold leading-snug">
+                    Instale o app na tela inicial para usar sem barra do navegador.
+                </div>
+            </div>
+            <button id="install-btn" class="px-4 py-2 rounded-full bg-white text-nutt-teal font-black text-xs shrink-0 active:scale-95 transition">
+                Instalar
+            </button>
+        </div>
+
+        <!-- ==================== ABA 1: ESTOQUE ==================== -->
+        <section id="tab-estoque">
+            <!-- Cards Resumo -->
+            <div class="grid grid-cols-3 gap-2.5 mb-4">
+                <div class="bg-white rounded-2xl p-3 border border-nutt-peach/40 shadow-sm text-center">
+                    <p class="text-[11px] font-bold text-nutt-rust uppercase">Produtos</p>
+                    <p id="stat-products" class="text-2xl font-black text-nutt-brown">0</p>
+                </div>
+                <div class="bg-white rounded-2xl p-3 border border-nutt-peach/40 shadow-sm text-center">
+                    <p class="text-[11px] font-bold text-nutt-teal uppercase">Total Unid.</p>
+                    <p id="stat-units" class="text-2xl font-black text-nutt-teal">0</p>
+                </div>
+                <div class="bg-white rounded-2xl p-3 border border-nutt-peach/40 shadow-sm text-center">
+                    <p class="text-[11px] font-bold text-nutt-orange uppercase">Baixo/Zero</p>
+                    <p id="stat-low" class="text-2xl font-black text-nutt-orange">0</p>
+                </div>
+            </div>
+
+            <!-- Busca e Novo Produto -->
+            <div class="flex gap-2 mb-3">
+                <div class="relative flex-1">
+                    <i class="ph-bold ph-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-nutt-rust/70 text-lg"></i>
+                    <input id="search-input" type="text" placeholder="Buscar produto, SKU ou categoria..."
+                        class="w-full pl-10 pr-4 py-3 rounded-2xl bg-white border border-nutt-peach/60 focus:border-nutt-orange outline-none font-bold text-sm shadow-sm">
+                </div>
+                <button onclick="window.app.openProductModal()" class="px-4 py-3 rounded-2xl bg-nutt-orange text-white font-black text-sm shadow-md flex items-center gap-1.5 active:scale-95 transition shrink-0">
+                    <i class="ph-bold ph-plus text-lg"></i>
+                    <span class="hidden sm:inline">Novo</span>
+                </button>
+            </div>
+
+            <!-- Filtros Rápidos -->
+            <div class="flex gap-2 overflow-x-auto no-scrollbar pb-3 mb-2">
+                <button data-filter="all" class="stock-filter-btn px-4 py-1.5 rounded-full text-xs font-extrabold bg-nutt-brown text-white shrink-0">Todos</button>
+                <button data-filter="low" class="stock-filter-btn px-4 py-1.5 rounded-full text-xs font-extrabold bg-white text-nutt-brown border border-nutt-peach shrink-0">Estoque Baixo</button>
+                <button data-filter="zero" class="stock-filter-btn px-4 py-1.5 rounded-full text-xs font-extrabold bg-white text-nutt-brown border border-nutt-peach shrink-0">Zerados</button>
+            </div>
+
+            <!-- Lista de Produtos -->
+            <div id="product-list" class="space-y-3"></div>
+        </section>
+
+        <!-- ==================== ABA 2: HISTÓRICO / EMPACOTAMENTO ==================== -->
+        <section id="tab-historico" class="hidden">
+            <div class="bg-white rounded-3xl p-4 border border-nutt-peach/50 shadow-sm mb-4 space-y-3">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-base font-black text-nutt-brown flex items-center gap-2">
+                        <i class="ph-fill ph-package text-nutt-orange text-xl"></i>
+                        Controle de Empacotamento
+                    </h2>
+                    <button onclick="window.app.exportLogsCSV()" class="text-xs font-extrabold text-nutt-teal flex items-center gap-1 px-3 py-1.5 rounded-full bg-nutt-teal/10 hover:bg-nutt-teal/20">
+                        <i class="ph-bold ph-download-simple"></i> CSV
+                    </button>
+                </div>
+
+                <!-- Filtros de Data, Pessoa e Tipo -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <div>
+                        <label class="block text-[11px] font-extrabold text-nutt-rust mb-1">Data</label>
+                        <input id="filter-date" type="date" class="w-full px-3 py-2 rounded-xl border border-nutt-peach/70 text-xs font-bold bg-white outline-none focus:border-nutt-orange">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-extrabold text-nutt-rust mb-1">Quem empacotou</label>
+                        <select id="filter-operator" class="w-full px-3 py-2 rounded-xl border border-nutt-peach/70 text-xs font-bold bg-white outline-none focus:border-nutt-orange">
+                            <option value="all">Todas as pessoas</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-extrabold text-nutt-rust mb-1">Movimentação</label>
+                        <select id="filter-type" class="w-full px-3 py-2 rounded-xl border border-nutt-peach/70 text-xs font-bold bg-white outline-none focus:border-nutt-orange">
+                            <option value="all">Saídas e Entradas</option>
+                            <option value="saida">Só Saídas (Empacotamento)</option>
+                            <option value="entrada">Só Entradas (Reposição)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Atalhos de Data -->
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="window.app.setQuickDate('today')" class="px-3 py-1 rounded-full bg-nutt-peach/50 text-nutt-brown text-xs font-extrabold">Hoje</button>
+                    <button onclick="window.app.setQuickDate('yesterday')" class="px-3 py-1 rounded-full bg-nutt-peach/50 text-nutt-brown text-xs font-extrabold">Ontem</button>
+                    <button onclick="window.app.setQuickDate('all')" class="px-3 py-1 rounded-full bg-gray-100 text-nutt-brown text-xs font-extrabold">Todas as datas</button>
+                </div>
+            </div>
+
+            <!-- Resumo por Pessoa (quem empacotou quanto no filtro atual) -->
+            <div id="packer-summary-card" class="bg-nutt-teal/10 border border-nutt-teal/30 rounded-3xl p-4 mb-4">
+                <p class="text-xs font-black text-nutt-teal uppercase tracking-wide mb-2">Resumo de Empacotamento (Saídas no filtro)</p>
+                <div id="packer-summary-list" class="flex flex-wrap gap-2"></div>
+            </div>
+
+            <!-- Timeline agrupada por dia -->
+            <div id="history-list" class="space-y-4"></div>
+        </section>
+
+        <!-- ==================== ABA 3: EQUIPE E CONFIG ==================== -->
+        <section id="tab-equipe" class="hidden space-y-4">
+            <div class="bg-white rounded-3xl p-5 border border-nutt-peach/50 shadow-sm">
+                <h2 class="text-base font-black text-nutt-brown mb-1 flex items-center gap-2">
+                    <i class="ph-fill ph-users-three text-nutt-orange text-xl"></i>
+                    Equipe de Empacotamento
+                </h2>
+                <p class="text-xs font-semibold text-nutt-rust mb-4">
+                    Cadastre os nomes de quem embala e movimenta o estoque.
+                </p>
+
+                <form id="team-form" class="flex gap-2 mb-4">
+                    <input id="new-member-input" type="text" required placeholder="Nome (ex: Ana, Bruna, Carla...)"
+                        class="flex-1 px-4 py-2.5 rounded-2xl border border-nutt-peach/70 text-sm font-bold outline-none focus:border-nutt-orange">
+                    <button type="submit" class="px-5 py-2.5 rounded-2xl bg-nutt-teal text-white font-black text-sm active:scale-95 transition">
+                        Adicionar
+                    </button>
+                </form>
+
+                <div id="team-list" class="space-y-2"></div>
+            </div>
+
+            <div class="bg-white rounded-3xl p-5 border border-nutt-peach/50 shadow-sm space-y-3">
+                <h2 class="text-base font-black text-nutt-brown flex items-center gap-2">
+                    <i class="ph-fill ph-gear text-nutt-teal text-xl"></i>
+                    Ferramentas
+                </h2>
+                <button onclick="window.app.exportStockCSV()" class="w-full py-3 px-4 rounded-2xl bg-nutt-peach/40 text-nutt-brown font-extrabold text-sm flex items-center justify-between">
+                    <span>Exportar Estoque Atual (CSV / Excel)</span>
+                    <i class="ph-bold ph-file-csv text-xl text-nutt-orange"></i>
+                </button>
+                <button onclick="window.app.lockApp()" class="w-full py-3 px-4 rounded-2xl bg-gray-100 text-nutt-brown font-extrabold text-sm flex items-center justify-between">
+                    <span>Bloquear App (Pedir PIN)</span>
+                    <i class="ph-bold ph-lock-simple text-xl text-nutt-rust"></i>
+                </button>
+                <a href="index.html" class="w-full py-3 px-4 rounded-2xl bg-white border border-nutt-peach/60 text-nutt-brown font-extrabold text-sm flex items-center justify-between">
+                    <span>Abrir Site Público da Nutt Pet</span>
+                    <i class="ph-bold ph-arrow-square-out text-xl text-nutt-teal"></i>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- ==================== NAVEGAÇÃO INFERIOR (APP MOBILE) ==================== -->
+    <nav class="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-nutt-peach/50 shadow-[0_-4px_20px_rgba(81,59,54,0.08)]">
+        <div class="max-w-3xl mx-auto grid grid-cols-3">
+            <button onclick="window.app.switchTab('estoque')" data-tab="estoque" class="nav-btn py-3 flex flex-col items-center gap-1 text-nutt-orange font-black text-xs">
+                <i class="ph-fill ph-boxes text-2xl"></i>
+                <span>Estoque</span>
+            </button>
+            <button onclick="window.app.switchTab('historico')" data-tab="historico" class="nav-btn py-3 flex flex-col items-center gap-1 text-nutt-brown/60 font-bold text-xs">
+                <i class="ph-fill ph-clock-counter-clockwise text-2xl"></i>
+                <span>Histórico</span>
+            </button>
+            <button onclick="window.app.switchTab('equipe')" data-tab="equipe" class="nav-btn py-3 flex flex-col items-center gap-1 text-nutt-brown/60 font-bold text-xs">
+                <i class="ph-fill ph-users text-2xl"></i>
+                <span>Equipe</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ==================== MODAL: CADASTRO / EDIÇÃO DE PRODUTO ==================== -->
+    <div id="product-modal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white w-full sm:max-w-md rounded-t-[2rem] sm:rounded-[2rem] p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-4">
+                <h3 id="product-modal-title" class="text-xl font-black text-nutt-brown">Novo Produto</h3>
+                <button onclick="window.app.closeModal('product-modal')" class="p-2 rounded-full hover:bg-gray-100">
+                    <i class="ph-bold ph-x text-xl"></i>
+                </button>
+            </div>
+            <form id="product-form" class="space-y-3">
+                <input type="hidden" id="prod-id">
+                <div>
+                    <label class="block text-xs font-extrabold text-nutt-rust mb-1">Nome do Produto *</label>
+                    <input id="prod-name" type="text" required placeholder="Ex: Ração Super Premium 10kg"
+                        class="w-full px-4 py-2.5 rounded-xl border border-nutt-peach/80 font-bold text-sm outline-none focus:border-nutt-orange">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-extrabold text-nutt-rust mb-1">SKU / Código</label>
+                        <input id="prod-sku" type="text" placeholder="Ex: RAC-01"
+                            class="w-full px-4 py-2.5 rounded-xl border border-nutt-peach/80 font-bold text-sm outline-none focus:border-nutt-orange">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-extrabold text-nutt-rust mb-1">Categoria</label>
+                        <input id="prod-category" type="text" placeholder="Ex: Farmácia, Petiscos"
+                            class="w-full px-4 py-2.5 rounded-xl border border-nutt-peach/80 font-bold text-sm outline-none focus:border-nutt-orange">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-extrabold text-nutt-rust mb-1">Quantidade Atual *</label>
+                        <input id="prod-qty" type="number" min="0" required value="0"
+                            class="w-full px-4 py-2.5 rounded-xl border border-nutt-peach/80 font-black text-base outline-none focus:border-nutt-orange">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-extrabold text-nutt-rust mb-1">Alerta Estoque Baixo</label>
+                        <input id="prod-min" type="number" min="0" value="3"
+                            class="w-full px-4 py-2.5 rounded-xl border border-nutt-peach/80 font-bold text-base outline-none focus:border-nutt-orange">
+                    </div>
+                </div>
+                <div class="pt-3 flex gap-2">
+                    <button type="button" id="delete-prod-btn" onclick="window.app.deleteCurrentProduct()" class="hidden px-4 py-3 rounded-full bg-red-50 text-red-600 font-extrabold text-sm">
+                        <i class="ph-bold ph-trash"></i>
+                    </button>
+                    <button type="submit" class="flex-1 py-3.5 rounded-full bg-nutt-orange text-white font-black text-base shadow-lg active:scale-95 transition">
+                        Salvar Produto
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: MOVIMENTAÇÃO PERSONALIZADA ==================== -->
+    <div id="move-modal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white w-full sm:max-w-md rounded-t-[2rem] sm:rounded-[2rem] p-6 shadow-2xl">
+            <div class="flex items-center justify-between mb-3">
+                <h3 id="move-modal-title" class="text-lg font-black text-nutt-brown truncate pr-2">Movimentar Estoque</h3>
+                <button onclick="window.app.closeModal('move-modal')" class="p-2 rounded-full hover:bg-gray-100">
+                    <i class="ph-bold ph-x text-xl"></i>
+                </button>
+            </div>
+            <p id="move-modal-sub" class="text-xs font-bold text-nutt-rust mb-4"></p>
+
+            <form id="move-form" class="space-y-4">
+                <input type="hidden" id="move-prod-id">
+                <div class="grid grid-cols-2 gap-2">
+                    <button type="button" id="btn-type-saida" onclick="window.app.setMoveType('saida')" class="py-3 rounded-2xl font-black text-sm bg-nutt-orange text-white shadow">
+                        <i class="ph-bold ph-minus-circle mr-1"></i> Saída (Empacotar)
+                    </button>
+                    <button type="button" id="btn-type-entrada" onclick="window.app.setMoveType('entrada')" class="py-3 rounded-2xl font-black text-sm bg-gray-100 text-nutt-brown">
+                        <i class="ph-bold ph-plus-circle mr-1"></i> Entrada (+)
+                    </button>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-extrabold text-nutt-rust mb-1">Quantidade</label>
+                    <input id="move-qty" type="number" min="1" value="1" required
+                        class="w-full px-4 py-3 rounded-xl border border-nutt-peach/80 font-black text-xl text-center outline-none focus:border-nutt-orange">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-extrabold text-nutt-rust mb-1">Observação / Nº do Pedido (opcional)</label>
+                    <input id="move-note" type="text" placeholder="Ex: Pedido #1045, Shopee, Reposição..."
+                        class="w-full px-4 py-2.5 rounded-xl border border-nutt-peach/80 font-bold text-sm outline-none focus:border-nutt-orange">
+                </div>
+
+                <button type="submit" class="w-full py-3.5 rounded-full bg-nutt-brown text-white font-black text-base shadow-lg active:scale-95 transition">
+                    Confirmar Registro
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: SELECIONAR OPERADORA ==================== -->
+    <div id="operator-modal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white w-full sm:max-w-md rounded-t-[2rem] sm:rounded-[2rem] p-6 shadow-2xl">
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="text-xl font-black text-nutt-brown">Quem está operando?</h3>
+                <button onclick="window.app.closeModal('operator-modal')" class="p-2 rounded-full hover:bg-gray-100">
+                    <i class="ph-bold ph-x text-xl"></i>
+                </button>
+            </div>
+            <p class="text-xs font-semibold text-nutt-rust mb-4">
+                Seu nome será gravado automaticamente em cada empacotamento ou entrada feita neste celular.
+            </p>
+            <div id="operator-choices" class="grid grid-cols-2 gap-2 mb-4"></div>
+            <form id="quick-operator-form" class="flex gap-2 pt-3 border-t border-gray-100">
+                <input id="quick-operator-input" type="text" placeholder="Outro nome..." required
+                    class="flex-1 px-3 py-2 rounded-xl border border-nutt-peach/80 text-sm font-bold outline-none focus:border-nutt-orange">
+                <button type="submit" class="px-4 py-2 rounded-xl bg-nutt-orange text-white font-black text-xs">
+                    Usar
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast de feedback -->
+    <div id="toast" class="fixed top-20 left-1/2 -translate-x-1/2 z-[120] px-5 py-3 rounded-full text-white font-extrabold text-xs shadow-xl transition-all duration-300 opacity-0 pointer-events-none max-w-[90vw] text-center"></div>
+
+    <!-- ==================== LÓGICA DO APP + FIREBASE ==================== -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import {
+            getDatabase, ref, onValue, push, set, update, remove, runTransaction
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+        // ============================================================
+        // 1. CONFIGURAÇÃO (COLE AS CREDENCIAIS DO SEU FIREBASE AQUI)
+        // ============================================================
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyDhMurRXWL6VfXLkjrhSUPqhmFdzn5vohM",
+  authDomain: "nuttpet-estoque.firebaseapp.com",
+  databaseURL: "https://nuttpet-estoque-default-rtdb.firebaseio.com",
+  projectId: "nuttpet-estoque",
+  storageBucket: "nuttpet-estoque.firebasestorage.app",
+  messagingSenderId: "578738469658",
+  appId: "1:578738469658:web:bfe9470a087dc3408f8aa3",
+  measurementId: "G-SG3P9R1STV"
+};
+
+        // PIN simples para proteger o acesso no GitHub Pages (deixe "" para desativar)
+        const APP_PIN = "1234";
+
+        // ============================================================
+        // 2. ESTADO GLOBAL E INICIALIZAÇÃO
+        // ============================================================
+        const useFirebase = firebaseConfig.apiKey && firebaseConfig.apiKey !== "AIzaSyDhMurRXWL6VfXLkjrhSUPqhmFdzn5vohM";
+        let db = null;
+
+        let products = {};
+        let logsMap = {};
+        let teamMap = {};
+        let stockFilter = 'all';
+        let moveType = 'saida';
+        let currentOperator = localStorage.getItem('nutt_operator') || '';
+        let pendingAction = null;
+
+        // Utilitários
+        function escapeHtml(str = '') {
+            return String(str).replace(/[&<>"']/g, m => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[m]));
+        }
+
+        function getLocalDateKey(d = new Date()) {
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${y}-${m}-${day}`;
+        }
+
+        function formatDateBR(dateKey) {
+            const [y, m, d] = dateKey.split('-');
+            return `${d}/${m}/${y}`;
+        }
+
+        function formatTimeBR(ts) {
+            return new Date(ts).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        let toastTimer = null;
+        function showToast(msg, variant = 'teal') {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.className = 'fixed top-20 left-1/2 -translate-x-1/2 z-[120] px-5 py-3 rounded-full text-white font-extrabold text-xs shadow-xl transition-all duration-300 max-w-[90vw] text-center ';
+            if (variant === 'orange') el.classList.add('bg-nutt-orange');
+            else if (variant === 'error') el.classList.add('bg-red-600');
+            else el.classList.add('bg-nutt-teal');
+
+            el.style.opacity = '1';
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => { el.style.opacity = '0'; }, 2400);
+        }
+
+        function updateSyncUI(online, text) {
+            const dot = document.getElementById('sync-dot');
+            const label = document.getElementById('sync-label');
+            dot.className = 'w-2 h-2 rounded-full ' + (online ? 'bg-emerald-500' : 'bg-amber-400');
+            label.textContent = text;
+        }
+
+        // ============================================================
+        // 3. SINCRONIZAÇÃO (FIREBASE OU MODO LOCAL DE TESTE)
+        // ============================================================
+        function saveLocal() {
+            localStorage.setItem('nutt_demo_products', JSON.stringify(products));
+            localStorage.setItem('nutt_demo_logs', JSON.stringify(logsMap));
+            localStorage.setItem('nutt_demo_team', JSON.stringify(teamMap));
+        }
+
+        function initData() {
+            if (useFirebase) {
+                const firebaseApp = initializeApp(firebaseConfig);
+                db = getDatabase(firebaseApp);
+
+                onValue(ref(db, '.info/connected'), (snap) => {
+                    updateSyncUI(snap.val() === true, snap.val() ? 'Firebase Online' : 'Reconectando...');
+                });
+
+                onValue(ref(db, 'produtos'), (snap) => {
+                    products = snap.val() || {};
+                    renderStock();
+                });
+
+                onValue(ref(db, 'movimentacoes'), (snap) => {
+                    logsMap = snap.val() || {};
+                    renderHistory();
+                });
+
+                onValue(ref(db, 'equipe'), (snap) => {
+                    teamMap = snap.val() || {};
+                    renderTeam();
+                    renderOperatorFilters();
+                });
+            } else {
+                updateSyncUI(false, 'Modo Local (configure o Firebase)');
+                products = JSON.parse(localStorage.getItem('nutt_demo_products') || 'null') || {
+                    demo1: { name: 'Ração Super Premium 10kg', sku: 'RAC-10', category: 'Nutrição', qty: 12, minQty: 3, updatedAt: Date.now() },
+                    demo2: { name: 'Shampoo Terapêutico 500ml', sku: 'SPA-05', category: 'Higiene', qty: 2, minQty: 4, updatedAt: Date.now() }
+                };
+                logsMap = JSON.parse(localStorage.getItem('nutt_demo_logs') || '{}');
+                teamMap = JSON.parse(localStorage.getItem('nutt_demo_team') || 'null') || {
+                    m1: { name: 'Equipe 1' },
+                    m2: { name: 'Equipe 2' }
+                };
+                saveLocal();
+                renderAll();
+            }
+        }
+
+        // ============================================================
+        // 4. OPERAÇÕES DE DADOS
+        // ============================================================
+        async function registerMovement(productId, type, amount, note = '') {
+            if (!currentOperator) {
+                pendingAction = () => registerMovement(productId, type, amount, note);
+                openOperatorModal();
+                return;
+            }
+
+            const qtyChange = parseInt(amount, 10);
+            if (isNaN(qtyChange) || qtyChange <= 0) return;
+
+            const prod = products[productId];
+            if (!prod) return;
+
+            const delta = type === 'entrada' ? qtyChange : -qtyChange;
+            const now = new Date();
+            const dateKey = getLocalDateKey(now);
+
+            if (useFirebase) {
+                const qtyRef = ref(db, `produtos/${productId}/qty`);
+                const tx = await runTransaction(qtyRef, (cur) => {
+                    const next = Number(cur || 0) + delta;
+                    if (next < 0) return; // aborta para não negativar
+                    return next;
+                });
+
+                if (!tx.committed) {
+                    showToast('Estoque insuficiente para essa saída!', 'error');
+                    return;
+                }
+
+                const newQty = tx.snapshot.val();
+                await update(ref(db, `produtos/${productId}`), { updatedAt: now.getTime() });
+                await push(ref(db, 'movimentacoes'), {
+                    productId,
+                    productName: prod.name,
+                    type,
+                    qty: qtyChange,
+                    newQty,
+                    operator: currentOperator,
+                    note: note.trim(),
+                    dateKey,
+                    timestamp: now.getTime()
+                });
+            } else {
+                const next = Number(prod.qty || 0) + delta;
+                if (next < 0) {
+                    showToast('Estoque insuficiente para essa saída!', 'error');
+                    return;
+                }
+                products[productId].qty = next;
+                products[productId].updatedAt = now.getTime();
+                const logId = 'log_' + now.getTime() + '_' + Math.random().toString(36).slice(2, 6);
+                logsMap[logId] = {
+                    productId,
+                    productName: prod.name,
+                    type,
+                    qty: qtyChange,
+                    newQty: next,
+                    operator: currentOperator,
+                    note: note.trim(),
+                    dateKey,
+                    timestamp: now.getTime()
+                };
+                saveLocal();
+                renderAll();
+            }
+
+            showToast(
+                type === 'saida'
+                    ? `-${qtyChange} ${prod.name} (por ${currentOperator})`
+                    : `+${qtyChange} ${prod.name} (por ${currentOperator})`,
+                type === 'saida' ? 'orange' : 'teal'
+            );
+        }
+
+        async function saveProduct(e) {
+            e.preventDefault();
+            const id = document.getElementById('prod-id').value;
+            const data = {
+                name: document.getElementById('prod-name').value.trim(),
+                sku: document.getElementById('prod-sku').value.trim(),
+                category: document.getElementById('prod-category').value.trim(),
+                qty: Math.max(0, parseInt(document.getElementById('prod-qty').value, 10) || 0),
+                minQty: Math.max(0, parseInt(document.getElementById('prod-min').value, 10) || 0),
+                updatedAt: Date.now()
+            };
+            if (!data.name) return;
+
+            if (useFirebase) {
+                if (id) await update(ref(db, `produtos/${id}`), data);
+                else await push(ref(db, 'produtos'), data);
+            } else {
+                const key = id || 'p_' + Date.now();
+                products[key] = data;
+                saveLocal();
+                renderStock();
+            }
+
+            closeModal('product-modal');
+            showToast(id ? 'Produto atualizado!' : 'Produto cadastrado!', 'teal');
+        }
+
+        async function deleteCurrentProduct() {
+            const id = document.getElementById('prod-id').value;
+            if (!id || !confirm('Excluir este produto do estoque?')) return;
+
+            if (useFirebase) {
+                await remove(ref(db, `produtos/${id}`));
+            } else {
+                delete products[id];
+                saveLocal();
+                renderStock();
+            }
+            closeModal('product-modal');
+            showToast('Produto excluído.', 'orange');
+        }
+
+        async function addTeamMember(name) {
+            const clean = name.trim();
+            if (!clean) return;
+            const exists = Object.values(teamMap).some(m => m.name.toLowerCase() === clean.toLowerCase());
+            if (!exists) {
+                if (useFirebase) {
+                    await push(ref(db, 'equipe'), { name: clean });
+                } else {
+                    teamMap['m_' + Date.now()] = { name: clean };
+                    saveLocal();
+                    renderTeam();
+                    renderOperatorFilters();
+                }
+            }
+        }
+
+        async function removeTeamMember(id) {
+            if (!confirm('Remover pessoa da lista da equipe?')) return;
+            if (useFirebase) {
+                await remove(ref(db, `equipe/${id}`));
+            } else {
+                delete teamMap[id];
+                saveLocal();
+                renderTeam();
+                renderOperatorFilters();
+            }
+        }
+
+        // ============================================================
+        // 5. RENDERIZAÇÃO DAS TELAS
+        // ============================================================
+        function renderAll() {
+            renderOperatorLabel();
+            renderStock();
+            renderTeam();
+            renderOperatorFilters();
+            renderHistory();
+        }
+
+        function renderOperatorLabel() {
+            document.getElementById('current-operator-label').textContent = currentOperator || 'Quem sou eu?';
+        }
+
+        function renderStock() {
+            const query = document.getElementById('search-input').value.trim().toLowerCase();
+            const entries = Object.entries(products).sort((a, b) => a[1].name.localeCompare(b[1].name, 'pt-BR'));
+
+            let totalUnits = 0;
+            let lowCount = 0;
+
+            entries.forEach(([, p]) => {
+                const q = Number(p.qty || 0);
+                const min = Number(p.minQty ?? 3);
+                totalUnits += q;
+                if (q <= min) lowCount++;
+            });
+
+            document.getElementById('stat-products').textContent = entries.length;
+            document.getElementById('stat-units').textContent = totalUnits;
+            document.getElementById('stat-low').textContent = lowCount;
+
+            const filtered = entries.filter(([, p]) => {
+                const q = Number(p.qty || 0);
+                const min = Number(p.minQty ?? 3);
+                if (stockFilter === 'low' && !(q > 0 && q <= min)) return false;
+                if (stockFilter === 'zero' && q !== 0) return false;
+                if (query) {
+                    const hay = `${p.name} ${p.sku || ''} ${p.category || ''}`.toLowerCase();
+                    if (!hay.includes(query)) return false;
+                }
+                return true;
+            });
+
+            const container = document.getElementById('product-list');
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white rounded-3xl p-8 text-center border border-dashed border-nutt-peach">
+                        <i class="ph-duotone ph-package text-5xl text-nutt-peach mb-2"></i>
+                        <p class="font-extrabold text-nutt-brown">Nenhum produto encontrado</p>
+                        <p class="text-xs font-semibold text-nutt-rust mt-1">Toque no botão "+" acima para cadastrar.</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(([id, p]) => {
+                const q = Number(p.qty || 0);
+                const min = Number(p.minQty ?? 3);
+                const isZero = q === 0;
+                const isLow = q > 0 && q <= min;
+
+                const statusBadge = isZero
+                    ? '<span class="px-2.5 py-0.5 rounded-full text-[11px] font-black bg-red-100 text-red-700">Zerado</span>'
+                    : isLow
+                        ? '<span class="px-2.5 py-0.5 rounded-full text-[11px] font-black bg-amber-100 text-amber-800">Baixo</span>'
+                        : '<span class="px-2.5 py-0.5 rounded-full text-[11px] font-black bg-nutt-teal/15 text-nutt-teal">OK</span>';
+
+                return `
+                <div class="bg-white rounded-3xl p-4 border ${isZero ? 'border-red-300' : 'border-nutt-peach/50'} shadow-sm">
+                    <div class="flex items-start justify-between gap-2 mb-3">
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <h3 class="font-black text-nutt-brown text-base leading-tight">${escapeHtml(p.name)}</h3>
+                                ${statusBadge}
+                            </div>
+                            <div class="flex items-center gap-2 mt-1 text-xs font-bold text-nutt-rust/80">
+                                ${p.sku ? `<span>SKU: ${escapeHtml(p.sku)}</span>` : ''}
+                                ${p.sku && p.category ? '<span>•</span>' : ''}
+                                ${p.category ? `<span>${escapeHtml(p.category)}</span>` : ''}
+                            </div>
+                        </div>
+                        <button onclick="window.app.openProductModal('${id}')" class="p-2 rounded-xl text-nutt-rust/70 hover:bg-nutt-peach/30 shrink-0" title="Editar">
+                            <i class="ph-bold ph-pencil-simple text-lg"></i>
+                        </button>
+                    </div>
+
+                    <div class="flex items-center justify-between gap-2 bg-[#fffaf7] rounded-2xl p-2 border border-nutt-peach/30">
+                        <!-- Botão Rápido -1 (Saída/Empacotamento) -->
+                        <button onclick="window.app.quickMove('${id}', 'saida')" ${isZero ? 'disabled' : ''}
+                            class="w-14 h-12 rounded-xl bg-nutt-orange text-white font-black text-xl shadow active:scale-95 transition flex items-center justify-center disabled:opacity-30">
+                            -1
+                        </button>
+
+                        <!-- Quantidade Atual -->
+                        <div class="text-center flex-1">
+                            <span class="block text-2xl font-black leading-none ${isZero ? 'text-red-600' : 'text-nutt-brown'}">${q}</span>
+                            <span class="text-[10px] font-extrabold text-nutt-rust uppercase">em estoque</span>
+                        </div>
+
+                        <!-- Botão Qtd Personalizada -->
+                        <button onclick="window.app.openMoveModal('${id}')"
+                            class="px-3 h-12 rounded-xl bg-white border border-nutt-peach text-nutt-brown font-black text-xs active:scale-95 transition">
+                            ± Qtd
+                        </button>
+
+                        <!-- Botão Rápido +1 (Entrada) -->
+                        <button onclick="window.app.quickMove('${id}', 'entrada')"
+                            class="w-14 h-12 rounded-xl bg-nutt-teal text-white font-black text-xl shadow active:scale-95 transition flex items-center justify-center">
+                            +1
+                        </button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function getFilteredLogs() {
+            const dateFilter = document.getElementById('filter-date').value;
+            const opFilter = document.getElementById('filter-operator').value;
+            const typeFilter = document.getElementById('filter-type').value;
+
+            return Object.entries(logsMap)
+                .map(([id, item]) => ({ id, ...item }))
+                .filter(log => {
+                    if (dateFilter && log.dateKey !== dateFilter) return false;
+                    if (opFilter !== 'all' && log.operator !== opFilter) return false;
+                    if (typeFilter !== 'all' && log.type !== typeFilter) return false;
+                    return true;
+                })
+                .sort((a, b) => b.timestamp - a.timestamp);
+        }
+
+        function renderHistory() {
+            const filtered = getFilteredLogs();
+
+            // Resumo de quem empacotou (saídas)
+            const summary = {};
+            filtered.forEach(log => {
+                if (log.type === 'saida') {
+                    if (!summary[log.operator]) summary[log.operator] = { units: 0, ops: 0 };
+                    summary[log.operator].units += Number(log.qty || 0);
+                    summary[log.operator].ops += 1;
+                }
+            });
+
+            const summaryEl = document.getElementById('packer-summary-list');
+            const summaryEntries = Object.entries(summary).sort((a, b) => b[1].units - a[1].units);
+            if (summaryEntries.length === 0) {
+                summaryEl.innerHTML = '<span class="text-xs font-bold text-nutt-brown/60">Nenhuma saída registrada neste filtro.</span>';
+            } else {
+                summaryEl.innerHTML = summaryEntries.map(([name, info]) => `
+                    <div class="px-3 py-1.5 rounded-full bg-white border border-nutt-teal/30 text-xs font-extrabold text-nutt-brown shadow-sm">
+                        ${escapeHtml(name)}: <span class="text-nutt-orange font-black">${info.units} un.</span>
+                        <span class="opacity-60">(${info.ops}x)</span>
+                    </div>
+                `).join('');
+            }
+
+            const container = document.getElementById('history-list');
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white rounded-3xl p-8 text-center border border-dashed border-nutt-peach">
+                        <i class="ph-duotone ph-calendar-blank text-5xl text-nutt-peach mb-2"></i>
+                        <p class="font-extrabold text-nutt-brown">Sem registros para este filtro</p>
+                    </div>`;
+                return;
+            }
+
+            // Agrupa por data (ex: Dia 1, Dia 2...)
+            const grouped = {};
+            filtered.forEach(log => {
+                if (!grouped[log.dateKey]) grouped[log.dateKey] = [];
+                grouped[log.dateKey].push(log);
+            });
+
+            container.innerHTML = Object.entries(grouped).map(([dateKey, items]) => {
+                const saidasDia = items.filter(i => i.type === 'saida').reduce((acc, i) => acc + Number(i.qty), 0);
+                return `
+                <div>
+                    <div class="flex items-center justify-between px-2 mb-2">
+                        <span class="text-xs font-black uppercase tracking-wider text-nutt-rust flex items-center gap-1.5">
+                            <i class="ph-fill ph-calendar text-nutt-orange"></i>
+                            ${formatDateBR(dateKey)}
+                        </span>
+                        <span class="text-[11px] font-extrabold text-nutt-brown/70">${saidasDia} un. empacotadas</span>
+                    </div>
+                    <div class="bg-white rounded-3xl border border-nutt-peach/50 divide-y divide-gray-100 overflow-hidden shadow-sm">
+                        ${items.map(log => {
+                            const isSaida = log.type === 'saida';
+                            return `
+                            <div class="p-3.5 flex items-center justify-between gap-3">
+                                <div class="flex items-start gap-3 min-w-0">
+                                    <div class="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 font-black text-sm ${isSaida ? 'bg-nutt-orange/15 text-nutt-orange' : 'bg-nutt-teal/15 text-nutt-teal'}">
+                                        ${isSaida ? '-' : '+'}${log.qty}
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="font-extrabold text-sm text-nutt-brown truncate">${escapeHtml(log.productName)}</p>
+                                        <div class="flex items-center flex-wrap gap-1.5 mt-0.5 text-xs font-bold">
+                                            <span class="px-2 py-0.5 rounded-md bg-nutt-peach/50 text-nutt-brown">
+                                                ${escapeHtml(log.operator)}
+                                            </span>
+                                            <span class="text-nutt-rust/70">${formatTimeBR(log.timestamp)}</span>
+                                            <span class="text-nutt-rust/70">• Saldo: ${log.newQty}</span>
+                                        </div>
+                                        ${log.note ? `<p class="text-xs font-semibold text-nutt-rust mt-1 italic">"${escapeHtml(log.note)}"</p>` : ''}
+                                    </div>
+                                </div>
+                            </div>`;
+                        }).join('')}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function renderTeam() {
+            const entries = Object.entries(teamMap).sort((a, b) => a[1].name.localeCompare(b[1].name, 'pt-BR'));
+            const list = document.getElementById('team-list');
+            const choices = document.getElementById('operator-choices');
+
+            if (entries.length === 0) {
+                list.innerHTML = '<p class="text-xs font-bold text-nutt-rust">Nenhuma pessoa cadastrada ainda.</p>';
+                choices.innerHTML = '';
+                return;
+            }
+
+            list.innerHTML = entries.map(([id, m]) => `
+                <div class="flex items-center justify-between p-3 rounded-2xl bg-[#fffaf7] border border-nutt-peach/40">
+                    <div class="flex items-center gap-2.5">
+                        <i class="ph-fill ph-user-circle text-2xl text-nutt-orange"></i>
+                        <span class="font-extrabold text-sm text-nutt-brown">${escapeHtml(m.name)}</span>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <button onclick="window.app.selectOperator('${escapeHtml(m.name)}')" class="px-3 py-1 rounded-full text-xs font-extrabold ${currentOperator === m.name ? 'bg-nutt-teal text-white' : 'bg-white border border-nutt-peach text-nutt-brown'}">
+                            ${currentOperator === m.name ? 'Ativo' : 'Usar'}
+                        </button>
+                        <button onclick="window.app.removeTeamMember('${id}')" class="p-1.5 text-red-500 hover:bg-red-50 rounded-lg">
+                            <i class="ph-bold ph-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            choices.innerHTML = entries.map(([, m]) => `
+                <button type="button" onclick="window.app.selectOperator('${escapeHtml(m.name)}')"
+                    class="py-3 px-3 rounded-2xl font-extrabold text-sm border-2 transition ${currentOperator === m.name ? 'bg-nutt-orange text-white border-nutt-orange' : 'bg-white text-nutt-brown border-nutt-peach/70 hover:border-nutt-orange'}">
+                    ${escapeHtml(m.name)}
+                </button>
+            `).join('');
+        }
+
+        function renderOperatorFilters() {
+            const select = document.getElementById('filter-operator');
+            const currentVal = select.value;
+            const names = new Set(Object.values(teamMap).map(m => m.name));
+            Object.values(logsMap).forEach(l => { if (l.operator) names.add(l.operator); });
+
+            select.innerHTML = '<option value="all">Todas as pessoas</option>' +
+                [...names].sort((a, b) => a.localeCompare(b, 'pt-BR'))
+                    .map(n => `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
+            if ([...names].includes(currentVal)) select.value = currentVal;
+        }
+
+        // ============================================================
+        // 6. MODAIS, ABAS, CSV E PIN
+        // ============================================================
+        function openModal(id) {
+            const el = document.getElementById(id);
+            el.classList.remove('hidden');
+            el.classList.add('flex');
+        }
+
+        function closeModal(id) {
+            const el = document.getElementById(id);
+            el.classList.add('hidden');
+            el.classList.remove('flex');
+        }
+
+        function openOperatorModal() {
+            renderTeam();
+            openModal('operator-modal');
+        }
+
+        function selectOperator(name) {
+            currentOperator = name;
+            localStorage.setItem('nutt_operator', name);
+            renderOperatorLabel();
+            renderTeam();
+            closeModal('operator-modal');
+            showToast(`Operando como ${name}`, 'teal');
+            if (pendingAction) {
+                const fn = pendingAction;
+                pendingAction = null;
+                fn();
+            }
+        }
+
+        function openProductModal(id = '') {
+            document.getElementById('prod-id').value = id;
+            const delBtn = document.getElementById('delete-prod-btn');
+            if (id && products[id]) {
+                const p = products[id];
+                document.getElementById('product-modal-title').textContent = 'Editar Produto';
+                document.getElementById('prod-name').value = p.name || '';
+                document.getElementById('prod-sku').value = p.sku || '';
+                document.getElementById('prod-category').value = p.category || '';
+                document.getElementById('prod-qty').value = p.qty ?? 0;
+                document.getElementById('prod-min').value = p.minQty ?? 3;
+                delBtn.classList.remove('hidden');
+            } else {
+                document.getElementById('product-modal-title').textContent = 'Novo Produto';
+                document.getElementById('product-form').reset();
+                document.getElementById('prod-qty').value = 0;
+                document.getElementById('prod-min').value = 3;
+                delBtn.classList.add('hidden');
+            }
+            openModal('product-modal');
+        }
+
+        function openMoveModal(id) {
+            const p = products[id];
+            if (!p) return;
+            document.getElementById('move-prod-id').value = id;
+            document.getElementById('move-modal-title').textContent = p.name;
+            document.getElementById('move-modal-sub').textContent = `Estoque atual: ${p.qty} un.`;
+            document.getElementById('move-qty').value = 1;
+            document.getElementById('move-note').value = '';
+            setMoveType('saida');
+            openModal('move-modal');
+        }
+
+        function setMoveType(type) {
+            moveType = type;
+            const btnSaida = document.getElementById('btn-type-saida');
+            const btnEntrada = document.getElementById('btn-type-entrada');
+            if (type === 'saida') {
+                btnSaida.className = 'py-3 rounded-2xl font-black text-sm bg-nutt-orange text-white shadow';
+                btnEntrada.className = 'py-3 rounded-2xl font-black text-sm bg-gray-100 text-nutt-brown';
+            } else {
+                btnEntrada.className = 'py-3 rounded-2xl font-black text-sm bg-nutt-teal text-white shadow';
+                btnSaida.className = 'py-3 rounded-2xl font-black text-sm bg-gray-100 text-nutt-brown';
+            }
+        }
+
+        function switchTab(tab) {
+            ['estoque', 'historico', 'equipe'].forEach(t => {
+                document.getElementById(`tab-${t}`).classList.toggle('hidden', t !== tab);
+            });
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                const active = btn.dataset.tab === tab;
+                btn.className = `nav-btn py-3 flex flex-col items-center gap-1 text-xs ${active ? 'text-nutt-orange font-black' : 'text-nutt-brown/60 font-bold'}`;
+            });
+            if (tab === 'historico') renderHistory();
+        }
+
+        function setQuickDate(mode) {
+            const input = document.getElementById('filter-date');
+            if (mode === 'all') {
+                input.value = '';
+            } else {
+                const d = new Date();
+                if (mode === 'yesterday') d.setDate(d.getDate() - 1);
+                input.value = getLocalDateKey(d);
+            }
+            renderHistory();
+        }
+
+        function downloadCSV(filename, rows) {
+            const csv = '\uFEFF' + rows.map(r => r.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(';')).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function exportLogsCSV() {
+            const logs = getFilteredLogs();
+            const rows = [['Data', 'Hora', 'Responsavel', 'Tipo', 'Produto', 'Quantidade', 'Saldo Apos', 'Observacao']];
+            logs.forEach(l => rows.push([
+                formatDateBR(l.dateKey), formatTimeBR(l.timestamp), l.operator,
+                l.type === 'saida' ? 'Saida (Empacotamento)' : 'Entrada',
+                l.productName, l.qty, l.newQty, l.note || ''
+            ]));
+            downloadCSV(`empacotamento-nuttpet-${getLocalDateKey()}.csv`, rows);
+        }
+
+        function exportStockCSV() {
+            const rows = [['Produto', 'SKU', 'Categoria', 'Quantidade Atual', 'Estoque Minimo']];
+            Object.values(products).sort((a, b) => a.name.localeCompare(b.name, 'pt-BR')).forEach(p => {
+                rows.push([p.name, p.sku || '', p.category || '', p.qty, p.minQty ?? 3]);
+            });
+            downloadCSV(`estoque-nuttpet-${getLocalDateKey()}.csv`, rows);
+        }
+
+        // PIN Gate
+        function checkPinGate() {
+            if (!APP_PIN || localStorage.getItem('nutt_pin_ok') === APP_PIN) return;
+            const screen = document.getElementById('pin-screen');
+            screen.classList.remove('hidden');
+            const input = document.getElementById('pin-input');
+            const error = document.getElementById('pin-error');
+
+            const tryUnlock = () => {
+                if (input.value === APP_PIN) {
+                    localStorage.setItem('nutt_pin_ok', APP_PIN);
+                    screen.classList.add('hidden');
+                    if (!currentOperator) openOperatorModal();
+                } else {
+                    error.classList.remove('hidden');
+                    input.value = '';
+                }
+            };
+            document.getElementById('pin-submit').onclick = tryUnlock;
+            input.onkeydown = (e) => { if (e.key === 'Enter') tryUnlock(); };
+        }
+
+        function lockApp() {
+            localStorage.removeItem('nutt_pin_ok');
+            location.reload();
+        }
+
+        // ============================================================
+        // 7. EVENT LISTENERS E PWA
+        // ============================================================
+        document.getElementById('product-form').addEventListener('submit', saveProduct);
+        document.getElementById('move-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('move-prod-id').value;
+            const qty = document.getElementById('move-qty').value;
+            const note = document.getElementById('move-note').value;
+            closeModal('move-modal');
+            await registerMovement(id, moveType, qty, note);
+        });
+
+        document.getElementById('team-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const input = document.getElementById('new-member-input');
+            await addTeamMember(input.value);
+            input.value = '';
+            showToast('Pessoa adicionada à equipe!', 'teal');
+        });
+
+        document.getElementById('quick-operator-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const input = document.getElementById('quick-operator-input');
+            const name = input.value.trim();
+            if (!name) return;
+            await addTeamMember(name);
+            input.value = '';
+            selectOperator(name);
+        });
+
+        document.getElementById('search-input').addEventListener('input', renderStock);
+        document.getElementById('filter-date').addEventListener('change', renderHistory);
+        document.getElementById('filter-operator').addEventListener('change', renderHistory);
+        document.getElementById('filter-type').addEventListener('change', renderHistory);
+
+        document.querySelectorAll('.stock-filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                stockFilter = btn.dataset.filter;
+                document.querySelectorAll('.stock-filter-btn').forEach(b => {
+                    const active = b.dataset.filter === stockFilter;
+                    b.className = `stock-filter-btn px-4 py-1.5 rounded-full text-xs font-extrabold shrink-0 ${active ? 'bg-nutt-brown text-white' : 'bg-white text-nutt-brown border border-nutt-peach'}`;
+                });
+                renderStock();
+            });
+        });
+
+        // Prompt de instalação PWA no Chrome
+        let deferredPrompt = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('install-banner').classList.remove('hidden');
+        });
+
+        document.getElementById('install-btn').addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            await deferredPrompt.userChoice;
+            deferredPrompt = null;
+            document.getElementById('install-banner').classList.add('hidden');
+        });
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw-estoque.js').catch(() => {});
+        }
+
+        // Expõe ações para os botões HTML
+        window.app = {
+            switchTab, openProductModal, closeModal, deleteCurrentProduct,
+            openMoveModal, setMoveType, openOperatorModal, selectOperator,
+            removeTeamMember, setQuickDate, exportLogsCSV, exportStockCSV, lockApp,
+            quickMove: (id, type) => registerMovement(id, type, 1, '')
+        };
+
+        // Start
+        renderOperatorLabel();
+        checkPinGate();
+        initData();
+        if (!currentOperator && (!APP_PIN || localStorage.getItem('nutt_pin_ok') === APP_PIN)) {
+            setTimeout(openOperatorModal, 350);
+        }
+    </script>
+</body>
+</html>
